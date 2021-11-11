@@ -84,7 +84,7 @@ const columns = [
   },
 ]
 
-function TicketList({ data, pagination, onPageChange }) {
+function TicketList({ data, pagination, loading, onPageChange }) {
 
   return (
     <Table
@@ -96,6 +96,7 @@ function TicketList({ data, pagination, onPageChange }) {
         ...pagination,
         onChange: onPageChange,
       }}
+      loading={loading}
     />
   )
 }

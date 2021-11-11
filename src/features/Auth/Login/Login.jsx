@@ -2,16 +2,36 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, Input, Button, Checkbox, Space } from 'antd'
 
+import { useDispatch } from 'react-redux'
+import { login } from '../authSlice'
+import { useHistory } from 'react-router'
+import { unwrapResult } from '@reduxjs/toolkit'
+
 function Login(props) {
-  const onFinish = (values) => {
-    console.log('Success:', values)
+  const dispatch = useDispatch()
+  const history = useHistory()
+
+  const onFinish = async (values) => {
+    const result = await dispatch(login(values))
+    unwrapResult(result)
+
+    if (result?.type?.indexOf('fulfilled') !== -1) {
+      history.push('/jobs')
+    }
   }
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
   return (
-    <div style={{height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <Form
         name="basic"
         labelCol={{ span: 8 }}
@@ -20,12 +40,12 @@ function Login(props) {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
-        style={{padding: 32, backgroundColor: "#f5f5f5", borderRadius: 4}}
+        style={{ padding: 32, backgroundColor: '#f5f5f5', borderRadius: 4 }}
       >
         <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: 'Please input your email!' }]}
         >
           <Input />
         </Form.Item>

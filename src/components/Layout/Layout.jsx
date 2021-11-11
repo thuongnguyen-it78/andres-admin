@@ -3,6 +3,7 @@ import {
 } from '@ant-design/icons'
 import { Breadcrumb, Layout, Menu } from 'antd'
 import NotFound from 'components/NotFound/NotFound'
+import Add from 'features/Job/components/Add/Add'
 import Job from 'features/Job/Job'
 import ProductFeature from 'features/Job/Job'
 import UserFeature from 'features/User/User'
@@ -62,7 +63,8 @@ function MainLayout(props) {
             </Breadcrumb> */}
               <Switch>
                 <Redirect from="/home" to="/" exact />
-                <Route path="/jobs" component={Job} />
+                <Route path="/jobs" exact component={Job} />
+                <Route path="/jobs/add" component={Add} />
                 <Route component={NotFound} />
               </Switch>
         </Content>

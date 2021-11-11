@@ -12,8 +12,8 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   function (config) {
     const ACCESS_TOKEN = localStorage.getItem('ACCESS_TOKEN');
-    if (true) {
-      config.headers.common['Authorization'] = 'Bearer ' + "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAxLCJ1c2VyX25hbWUiOiIiLCJuYW1lIjoiVGh1b25nIE5ndXllbiIsImRlcGFydG1lbnRfaWQiOm51bGwsImJydl9jb2RlIjoiIiwiZW1haWwiOiJ0aHVvbmduZ3V5ZW5AbHViLmNvbSIsInR5cGUiOjEsImNybV9yb2xlX2luZm8iOnsiaWQiOjExNiwicm9sZXNfaWQiOjEsInJvbGVfaW5mbyI6eyJrZXkiOiIxIiwibGFiZWwiOiJBZG1pbiIsImlkIjoxLCJuYW1lIjoiQWRtaW4ifX0sImJ5X2l0IjpmYWxzZSwiaWF0IjoxNjM2NDY5MTU2fQ.q39NSVUcjr9KwyyQ8TAnK0Qt5o7Nl9AdofxsXdvNTZfORjzNmVUO7CrTQAUDTXNNBL2V5b5hQKVRrAdOn8lcqA";
+    if (ACCESS_TOKEN) {
+      config.headers.common['Authorization'] = 'Bearer ' + ACCESS_TOKEN;
     }
 
     // Do something before request is sent

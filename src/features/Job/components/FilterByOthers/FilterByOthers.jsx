@@ -3,6 +3,7 @@ import { Col, DatePicker, Form, Row, Select, Card, Button } from 'antd'
 import userApi from 'api/user'
 import { priority, statusMain } from 'constants/job'
 import React, { useEffect, useState } from 'react'
+import _ from 'lodash'
 import moment from 'moment'
 const dateFormat = 'DD/MM/YYYY'
 
@@ -29,7 +30,15 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
   }, [userFilter])
 
   useEffect(() => {
-    form.setFieldsValue(filters)
+    const newFilter = {
+      ...filters,
+      created_from: filters.created_from && moment(filters.created_from),
+      created_to: filters.created_to && moment(filters.created_to),
+      deadline_from: filters.deadline_from && moment(filters.deadline_from),
+      deadline_to: filters.deadline_to && moment(filters.deadline_to),
+    }
+
+    form.setFieldsValue(newFilter)
   }, [form, filters])
 
   const handleSearch = (value) => {
@@ -40,27 +49,11 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
     }
   }
 
-  const handleFormValueChange = (value) => {
-    console.log(value)
-    const dateKeyList = [
-      'created_from',
-      'created_to',
-      'deadline_from',
-      'deadline_to',
-    ]
-    let keyName = ''
+  const handleSearchDebounce = _.debounce((value, functionDeboune) => {
+    functionDeboune(value);
+    }, 700);
 
-    const flag = dateKeyList.some((dateKey) => {
-      if (value.hasOwnProperty(dateKey)) {
-        keyName = dateKey
-        return true
-      }
-      return false
-    })
-    if (flag) {
-      value[keyName] = moment(value[keyName]).format('YYYY-MM-DD')
-      onFilterChange(value)
-    }
+  const handleFormValueChange = (value) => {
     onFilterChange(value)
   }
 
@@ -90,7 +83,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 showSearch
                 allowClear
                 loading={selectLoading}
-                onSearch={handleSearch}
+                onSearch={(value) => handleSearchDebounce(value, handleSearch)}
                 filterOption={() => true}
               >
                 {userList.map((user) => (
@@ -107,7 +100,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 allowClear
                 mode="multiple"
                 loading={selectLoading}
-                onSearch={handleSearch}
+                onSearch={(value) => handleSearchDebounce(value, handleSearch)}
                 filterOption={() => true}
                 showSearch
               >
@@ -126,7 +119,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 placeholder="Trạng thái"
                 allowClear
                 showSearch
-                onSearch={handleSearch}
+                onSearch={(value) => handleSearchDebounce(value, handleSearch)}
               >
                 {statusMain.map((item) => (
                   <Option value={item.id}>{item.text}</Option>
@@ -141,7 +134,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 placeholder="Người tạo"
                 allowClear
                 showSearch
-                onSearch={handleSearch}
+                onSearch={(value) => handleSearchDebounce(value, handleSearch)}
                 loading={selectLoading}
               >
                 {userList.map((user) => (
@@ -158,6 +151,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 format={dateFormat}
                 disabledDate={(current) => {
                   let customDate = form.getFieldValue('created_to')
+                  if(!customDate) return false;
                   return current && current > customDate
                 }}
               />
@@ -170,7 +164,9 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 placeholder="Ngày tạo đến ngày"
                 format={dateFormat}
                 disabledDate={(current) => {
-                  let customDate = form.getFieldValue('deadline_to')
+                  let customDate = form.getFieldValue('created_from')
+                  console.log({customDate})
+                  if(!customDate) return false;
                   return current && current < customDate
                 }}
               />
@@ -184,6 +180,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 format={dateFormat}
                 disabledDate={(current) => {
                   let customDate = form.getFieldValue('deadline_to')
+                  if(!customDate) return false;
                   return current && current > customDate
                 }}
               />
@@ -197,6 +194,7 @@ function FilterByOthers({ onSetNewFilters, filters, onFilterChange }) {
                 format={dateFormat}
                 disabledDate={(current) => {
                   let customDate = form.getFieldValue('deadline_from')
+                  if(!customDate) return false;
                   return current && current < customDate
                 }}
               />

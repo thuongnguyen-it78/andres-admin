@@ -8,6 +8,11 @@ import moment from 'moment';
 import { PAGE, PER_PAGE } from 'constants/job'
 import './Job.scss'
 
+const formatArr = (arr) => {
+  if(!Array.isArray(arr)) return `[${arr}]`
+  return `[${arr.join(",")}]`
+}
+
 function Job(props) {
   const [ticketList, setTicketList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -31,25 +36,33 @@ function Job(props) {
       worker_ids: Number.parseInt(params.worker_ids) || undefined,
       creator_id: Number.parseInt(params.creator_id) || undefined,
 
-      created_from: params.created_from && moment(params.created_from),
-      created_to: params.created_to && moment(params.created_to),
-      deadline_from: params.deadline_from && moment(params.deadline_from),
-      deadline_to: params.deadline_to && moment(params.deadline_to),
+      created_from: params.created_from,
+      created_to: params.created_to,
+      deadline_from: params.deadline_from,
+      deadline_to: params.deadline_to,
     }
+
+
   }, [location.search])
 
   useEffect(() => {
+    setLoading(true)
     try {
       ;(async () => {
+        if(queryParams.support_ids) queryParams.support_ids = formatArr(queryParams.support_ids)
+        if(queryParams.worker_ids) queryParams.worker_ids = formatArr(queryParams.worker_ids)
+
         const { data, total } = await ticketApi.getAll(queryParams)
         setTicketList(data)
         setTotal(total)
+        setLoading(false)
+
       })()
     } catch (error) { 
       console.log(error)
+    } finally {
     }
 
-    setLoading(false)
   }, [queryParams])
 
   const handlePageChange = (page, pageSize) => {
@@ -61,6 +74,19 @@ function Job(props) {
       ...queryParams,
       ...newFilters,
     }
+
+    const dateKeyList = [
+      'created_from',
+      'created_to',
+      'deadline_from',
+      'deadline_to',
+    ]
+
+    dateKeyList.forEach((dateKey) => {
+      if (filters[dateKey]) {
+        filters[dateKey] = moment(filters[dateKey]).format('YYYY-MM-DD')
+      }
+    })
 
     history.push({
       pathname: history.location.pathname,
@@ -94,7 +120,7 @@ function Job(props) {
         data={ticketList}
         onPageChange={handlePageChange}
         pagination={{ total: total, current: queryParams.page }}
-        
+        loading={loading}
       />
     </div>
   )
