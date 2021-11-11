@@ -49,10 +49,11 @@ function Job(props) {
     setLoading(true)
     try {
       ;(async () => {
-        if(queryParams.support_ids) queryParams.support_ids = formatArr(queryParams.support_ids)
-        if(queryParams.worker_ids) queryParams.worker_ids = formatArr(queryParams.worker_ids)
+        const params = {...queryParams}
+        if(params.support_ids) params.support_ids = formatArr(params.support_ids)
+        if(params.worker_ids) params.worker_ids = formatArr(params.worker_ids)
 
-        const { data, total } = await ticketApi.getAll(queryParams)
+        const { data, total } = await ticketApi.getAll(params)
         setTicketList(data)
         setTotal(total)
         setLoading(false)
